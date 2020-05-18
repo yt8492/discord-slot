@@ -8,22 +8,22 @@ type EmojiRepository interface {
 }
 
 type InMemoryEmojiRepository struct {
-	emojis *[]model.Emoji
+	emojis []model.Emoji
 }
 
 func (r *InMemoryEmojiRepository) Save(emoji model.Emoji) {
-	for _, v := range *r.emojis{
+	for _, v := range r.emojis{
 		if v == emoji {
 			return
 		}
 	}
-	*r.emojis = append(*r.emojis, emoji)
+	r.emojis = append(r.emojis, emoji)
 }
 
 func (r *InMemoryEmojiRepository) GetAll() []model.Emoji {
-	return *r.emojis
+	return r.emojis
 }
 
 func NewInMemoryEmojiRepository() InMemoryEmojiRepository {
-	return InMemoryEmojiRepository{&[]model.Emoji{}}
+	return InMemoryEmojiRepository{[]model.Emoji{}}
 }
