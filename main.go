@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"os"
 	"os/signal"
+	"strconv"
 	"strings"
 	"syscall"
 )
@@ -38,7 +39,9 @@ func main() {
 		if mc.Author.ID == s.State.User.ID || !strings.HasPrefix(mc.Content, prefix) {
 			return
 		}
-		command := strings.TrimPrefix(mc.Content, prefix)
+		rawInput := strings.TrimPrefix(mc.Content, prefix)
+		args := strings.Split(rawInput, " ")
+		command := args[0]
 		var g *discordgo.Guild
 		g, err = s.Guild(mc.GuildID)
 		if err != nil {
@@ -48,15 +51,26 @@ func main() {
 		switch command {
 		case "slot":
 			emojis := getGuildEmojis(g)
-			slot := make([]string, 3)
-			for i := 0; i < 3; i++ {
-				slot[i] = emojis[rand.Intn(len(emojis))]
-			}
 			var result string
-			if len(slot) > 0 {
-				result = strings.Join(slot, "")
-			} else {
+			if len(emojis) == 0 {
 				result = "This guild has no emoji."
+			} else {
+				size := 1
+				if len(args) > 1 {
+					i, err := strconv.Atoi(args[1])
+					if err == nil {
+						size = i
+					}
+				}
+				slots := make([]string, size)
+				for i := 0; i < size; i++ {
+					slot := make([]string, 3)
+					for j := 0; j < 3; j++ {
+						slot[j] = emojis[rand.Intn(len(emojis))]
+					}
+					slots[i] = strings.Join(slot, "")
+				}
+				result = strings.Join(slots, "\n")
 			}
 			_, err = s.ChannelMessageSend(mc.ChannelID, result)
 		case "list":
