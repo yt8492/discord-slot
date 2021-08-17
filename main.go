@@ -61,16 +61,21 @@ func main() {
 					if err == nil {
 						size = i
 					}
-				}
-				slots := make([]string, size)
-				for i := 0; i < size; i++ {
-					slot := make([]string, 3)
-					for j := 0; j < 3; j++ {
-						slot[j] = emojis[rand.Intn(len(emojis))]
+					if err != nil || size < 0 {
+						result = "不正な入力を検知しました。叙々苑ポイントが付与されます。"
 					}
-					slots[i] = strings.Join(slot, "")
 				}
-				result = strings.Join(slots, "\n")
+				if size >= 0 {
+					slots := make([]string, size)
+					for i := 0; i < size; i++ {
+						slot := make([]string, 3)
+						for j := 0; j < 3; j++ {
+							slot[j] = emojis[rand.Intn(len(emojis))]
+						}
+						slots[i] = strings.Join(slot, "")
+					}
+					result = strings.Join(slots, "\n")
+				}
 			}
 			_, err = s.ChannelMessageSend(mc.ChannelID, result)
 		case "list":
